@@ -1,8 +1,15 @@
+from turtle import title
+from urllib import response
+from database import (create_task, remove_task,
+                      fetch_all_tasks, fetch_one_task, update_task)
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-## App objeto
+from model import Todo
+
+# App objeto
 app = FastAPI()
+
 
 origins = ['http://localhost:3000/']
 
@@ -22,24 +29,37 @@ def read_root():
 
 @app.get("/api/todo")
 async def get_tasks():
-    return 1
+    response = await fetch_all_tasks()
+    return response
 
 
-@app.get("/api/todo-{id}")
-async def get_task_by_id(id):
-  return 1
+@app.get("/api/todo-{title}", response_model=Todo)
+async def get_task_by_id(title):
+    response = await fetch_one_task(title)
+    if response:
+        return response
+    raise HTTPException(404, f"Não existe tarefa com o titulo {title}")
 
 
-@app.post("/api/todo")
-async def post_task(task):
-  return 1
+@app.post("/api/todo", response_model=Todo)
+async def post_task(task: Todo):
+    response = await create_task(task.dict())
+    if response:
+        return response
+    raise HTTPException(400, 'Algo deu errado')
 
 
-@app.put("/api/todo-{id}")
-async def put_task(id, data):
-  return 1
+@app.put("/api/todo-{title}", response_model=Todo)
+async def put_task(title: str, description: str):
+    response = await update_task(title, description)
+    if response:
+        return response
+    raise HTTPException(404, f"Não existe tarefa com o título {title}")
 
 
-@app.delete("/api/todo-{id}")
-async def delete_task(id):
-  return 1
+@app.delete("/api/todo-{title}")
+async def delete_task(title):
+    response = await remove_task(title)
+    if response:
+        return "Tarefa removida com sucesso"
+    raise HTTPException(404, f"Não existe tarefa com o título {title}")

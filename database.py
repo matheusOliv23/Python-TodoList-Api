@@ -36,6 +36,6 @@ async def update_task(title, description):
   return document
 
 
-async def delete_task(title):
+async def remove_task(title):
   await collection.delete_one({"title": title})
   return True
