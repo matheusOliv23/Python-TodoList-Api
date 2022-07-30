@@ -4,7 +4,8 @@ from model import Todo
 # MongoDB driver
 import motor.motor_asyncio
 
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017')
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    'mongodb+srv://crud_api:gtzKulEIj9aHYfaS@blog.7eayp.mongodb.net/Todolist')
 
 database = client.TodoList
 collection = database.todo
@@ -17,14 +18,14 @@ async def fetch_one_task(title):
 
 async def fetch_all_tasks():
   tasks = []
-  cursor: collection.find({})
+  cursor = collection.find({})
   async for document in cursor:
     tasks.append(Todo(**document))
   return tasks
 
 
 async def create_task(task):
-  document: task
+  document = task
   await collection.insert_one(document)
   return document
 
